@@ -7,9 +7,9 @@
 
 /***************根据自己需求更改****************/
 //DHT11引脚宏定义
-#define DHT11_GPIO_PORT  GPIOA
+#define DHT11_GPIO_PORT  GPIOB
 #define DHT11_GPIO_PIN   GPIO_Pin_8
-#define DHT11_GPIO_CLK   RCC_APB2Periph_GPIOA
+#define DHT11_GPIO_CLK   RCC_APB2Periph_GPIOB
 /*********************END**********************/
 
 //输出状态定义

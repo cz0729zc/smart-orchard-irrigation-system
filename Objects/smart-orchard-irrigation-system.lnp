@@ -40,8 +40,14 @@
 ".\objects\dht11.o"
 ".\objects\keys.o"
 ".\objects\lcd12864char.o"
+".\objects\lcd1602.o"
 ".\objects\main.o"
 ".\objects\stm32f10x_it.o"
+".\objects\gizwits_product.o"
+".\objects\gizwits_protocol.o"
+".\objects\common.o"
+".\objects\datapointtools.o"
+".\objects\ringbuffer.o"
 --strict --scatter ".\Objects\smart-orchard-irrigation-system.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

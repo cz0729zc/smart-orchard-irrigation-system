@@ -25,8 +25,8 @@
 #include "stm32f10x_it.h"
 #include "usart1.h"
 #include "usart2.h"
-//#include "gizwits_product.h"
-//#include "gizwits_protocol.h"
+#include "gizwits_product.h"
+#include "gizwits_protocol.h"
 
 
 extern char Usart1_RxCompleted;     // 接收完成标志
@@ -52,17 +52,16 @@ extern char Usart1_RxBuff[]; // 接收缓冲区
 /*参  数：无                                       */
 /*返回值：无                                       */
  /*-------------------------------------------------*/
-// void USART1_IRQHandler(void) {
-//     if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
-// 		//Serial_Printf("\r\n 进入串口中断");
-//         uint8_t data = USART_ReceiveData(USART1);
-//         PM25_ReceiveHandler(data);  // PM2.5数据处理调用
-// 		//Serial_SendByte(data);
-//         //Usart1_RxBuff = data;
-//         Usart1_RxCompleted = 1;
-//         USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-//     }
-// }
+void USART1_IRQHandler(void) {
+    if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) {
+        USART_ClearITPendingBit(USART1, USART_IT_RXNE); // 清除RXNE标志
+        uint8_t data = USART_ReceiveData(USART1);       // 读取数据（必须执行以清除标志）
+    }
+    if (USART_GetFlagStatus(USART1, USART_FLAG_ORE) == SET) {
+        USART_ClearFlag(USART1, USART_FLAG_ORE);       // 清除ORE标志
+        USART_ReceiveData(USART1);                     // 必须读取DR寄存器
+    }
+}
 ///*-------------------------------------------------*/
 ///*函数名：串口2接收中断函数                        */
 ///*参  数：无                                       */
@@ -94,6 +93,15 @@ extern char Usart1_RxBuff[]; // 接收缓冲区
 //    }
 //}
 
+void USART3_IRQHandler(void) {
+  uint8_t value = 0;
+  if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET){
+      USART_ClearITPendingBit(USART3,USART_IT_RXNE);
+      value = USART_ReceiveData(USART3);
+      gizPutData(&value, 1);
+  }
+}
+
 //extern uint8_t timer4_flag; // TIM4中断标志
 //extern uint32_t g_system_tick;    // 系统运行时间(秒)
 
@@ -102,15 +110,15 @@ extern char Usart1_RxBuff[]; // 接收缓冲区
 /*参  数：无                                       */
 /*返回值：无                                       */
 /*-------------------------------------------------*/
-//void TIM4_IRQHandler(void)
-//{
-//   if(TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)
-//   {
-//       TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
-//       //g_system_tick++; // 系统滴答计数器递增
-//       gizTimerMs(); // 调用gizwits协议的定时器函数
-//   }
-//}
+void TIM4_IRQHandler(void)
+{
+   if(TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)
+   {
+       TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
+       //g_system_tick++; // 系统滴答计数器递增
+       gizTimerMs(); // 调用gizwits协议的定时器函数
+   }
+}
 ///*-------------------------------------------------*/
 ///*函数名：定时器3中断服务函数                      */
 ///*参  数：无                                       */

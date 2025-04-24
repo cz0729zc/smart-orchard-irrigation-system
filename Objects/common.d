@@ -1,0 +1,10 @@
+.\objects\common.o: Utils\common.c
+.\objects\common.o: Utils\common.h
+.\objects\common.o: D:\Development_Tool\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\common.o: D:\Development_Tool\Keil5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\common.o: D:\Development_Tool\Keil5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\common.o: D:\Development_Tool\Keil5\ARM\ARMCC\Bin\..\include\string.h
+.\objects\common.o: D:\Development_Tool\Keil5\ARM\ARMCC\Bin\..\include\ctype.h
+.\objects\common.o: D:\Development_Tool\Keil5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\common.o: .\System\usart\usart1.h
+.\objects\common.o: D:\Development_Tool\Keil5\ARM\ARMCC\Bin\..\include\stdarg.h

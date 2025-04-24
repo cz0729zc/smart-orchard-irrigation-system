@@ -336,7 +336,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_MD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\User;.\System\delay;.\System\sys;.\System\timer;.\System\usart;.\Start;.\Library;.\Hardware;.\System\RTC</IncludePath>
+              <IncludePath>.\User;.\System\delay;.\System\sys;.\System\timer;.\System\usart;.\Start;.\Library;.\Hardware;.\System\RTC;.\Gizwits;.\Utils</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -640,6 +640,16 @@
               <FileType>5</FileType>
               <FilePath>.\Hardware\Lcd12864Char.h</FilePath>
             </File>
+            <File>
+              <FileName>LCD1602.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\LCD1602.c</FilePath>
+            </File>
+            <File>
+              <FileName>LCD1602.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Hardware\LCD1602.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -669,6 +679,51 @@
               <FileName>stm32f10x_it.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\User\stm32f10x_it.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Gizwits</GroupName>
+          <Files>
+            <File>
+              <FileName>gizwits_product.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Gizwits\gizwits_product.c</FilePath>
+            </File>
+            <File>
+              <FileName>gizwits_product.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Gizwits\gizwits_product.h</FilePath>
+            </File>
+            <File>
+              <FileName>gizwits_protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Gizwits\gizwits_protocol.c</FilePath>
+            </File>
+            <File>
+              <FileName>gizwits_protocol.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Gizwits\gizwits_protocol.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Utils</GroupName>
+          <Files>
+            <File>
+              <FileName>common.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Utils\common.c</FilePath>
+            </File>
+            <File>
+              <FileName>dataPointTools.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Utils\dataPointTools.c</FilePath>
+            </File>
+            <File>
+              <FileName>ringbuffer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Utils\ringbuffer.c</FilePath>
             </File>
           </Files>
         </Group>

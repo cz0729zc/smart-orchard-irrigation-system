@@ -16,12 +16,18 @@
 #define DECREASE_PORT   GPIOB
 #define DECREASE_CLK    RCC_APB2Periph_GPIOB
 
+//PB7引脚定义
+#define MODE_PIN       GPIO_Pin_7   // PB7
+#define MODE_PORT      GPIOB
+#define MODE_CLK       RCC_APB2Periph_GPIOB
+
 // 按键功能定义
 typedef enum {
     KEY_NONE = 0,
     KEY_SETTING_PRESSED,    // PB12按键按下(进入阈值设置界面)
     KEY_INCREASE_PRESSED,   // PB13按键按下(增加)
-    KEY_DECREASE_PRESSED    // PB14按键按下(减小)
+    KEY_DECREASE_PRESSED,    // PB14按键按下(减小)
+	 KEY_MODE_PRESSED        // PB7按键按下
 } Key_Value;
 
 void Key_Init(void);
