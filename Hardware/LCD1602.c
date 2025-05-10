@@ -16,6 +16,15 @@
      }
  }
 
+ // 位反转函数，比如0b00000001 => 0b10000000
+uint8_t ReverseByte(uint8_t byte) {
+    byte = (byte & 0xF0) >> 4 | (byte & 0x0F) << 4;
+    byte = (byte & 0xCC) >> 2 | (byte & 0x33) << 2;
+    byte = (byte & 0xAA) >> 1 | (byte & 0x55) << 1;
+    return byte;
+}
+ 
+ 
  // GPIO初始化
  static void GPIO_Config(void) {
      GPIO_InitTypeDef GPIO_InitStruct;
@@ -35,33 +44,33 @@
      GPIO_Init(LCD_DATA_GPIO, &GPIO_InitStruct);
  }
 
- // 写命令
- void LCD_WriteCommand(uint8_t cmd) {
-     GPIO_ResetBits(LCD_RS_GPIO, LCD_RS_PIN); // RS=0
-     GPIO_ResetBits(LCD_RW_GPIO, LCD_RW_PIN); // RW=0
-    
-     // 写入数据总线
-     GPIO_Write(LCD_DATA_GPIO, (GPIO_ReadOutputData(LCD_DATA_GPIO) & 0xFF00) | cmd);
-    
-     // 产生EN脉冲
-     GPIO_SetBits(LCD_EN_GPIO, LCD_EN_PIN);
-     delay_ms(1);
-     GPIO_ResetBits(LCD_EN_GPIO, LCD_EN_PIN);
-     delay_ms(1);
- }
+// 写命令
+void LCD_WriteCommand(uint8_t cmd) {
+    GPIO_ResetBits(LCD_RS_GPIO, LCD_RS_PIN); // RS=0
+    GPIO_ResetBits(LCD_RW_GPIO, LCD_RW_PIN); // RW=0
 
- // 写数据
- void LCD_WriteData(uint8_t data) {
-     GPIO_SetBits(LCD_RS_GPIO, LCD_RS_PIN); // RS=1
-     GPIO_ResetBits(LCD_RW_GPIO, LCD_RW_PIN); // RW=0
-    
-     GPIO_Write(LCD_DATA_GPIO, (GPIO_ReadOutputData(LCD_DATA_GPIO) & 0xFF00) | data);
-    
-     GPIO_SetBits(LCD_EN_GPIO, LCD_EN_PIN);
-     delay_ms(1);
-     GPIO_ResetBits(LCD_EN_GPIO, LCD_EN_PIN);
-     delay_ms(1);
- }
+    uint8_t reversedCmd = ReverseByte(cmd);
+    GPIO_Write(LCD_DATA_GPIO, (GPIO_ReadOutputData(LCD_DATA_GPIO) & 0xFF00) | reversedCmd);
+
+    GPIO_SetBits(LCD_EN_GPIO, LCD_EN_PIN);
+    delay_ms(1);
+    GPIO_ResetBits(LCD_EN_GPIO, LCD_EN_PIN);
+    delay_ms(1);
+}
+
+// 写数据
+void LCD_WriteData(uint8_t data) {
+    GPIO_SetBits(LCD_RS_GPIO, LCD_RS_PIN); // RS=1
+    GPIO_ResetBits(LCD_RW_GPIO, LCD_RW_PIN); // RW=0
+
+    uint8_t reversedData = ReverseByte(data);
+    GPIO_Write(LCD_DATA_GPIO, (GPIO_ReadOutputData(LCD_DATA_GPIO) & 0xFF00) | reversedData);
+
+    GPIO_SetBits(LCD_EN_GPIO, LCD_EN_PIN);
+    delay_ms(1);
+    GPIO_ResetBits(LCD_EN_GPIO, LCD_EN_PIN);
+    delay_ms(1);
+}
 
  // 初始化LCD
  void LCD_Init(void) {
@@ -120,3 +129,5 @@
      LCD_SetCursor(x, y);
      LCD_WriteData(' '); // 写入空格字符
  }
+ 
+ 

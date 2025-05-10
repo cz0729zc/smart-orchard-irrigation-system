@@ -173,8 +173,8 @@ int main(void)
 			// 设置模式（带闪烁）
 				if(currentMode == SET_SOIL_HUMI) {
 					sprintf(showchar, "Set SoilHumi:%2d%%", SoilHumi_threshold);
-					LCD_PrintString(1, 1, showchar);
-					LCD_PrintString(2, 1, "                ");  // 清空第二行
+					LCD_PrintString(2, 1, showchar);
+					LCD_PrintString(1, 1, "                ");  // 清空第二行
 				} else {
 					sprintf(showchar, "Set Light: %2dLux", Light_threshold);
 					LCD_PrintString(2, 1, showchar);
