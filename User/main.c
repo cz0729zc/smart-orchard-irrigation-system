@@ -21,19 +21,36 @@ u8 g_temp;
 u8 g_humi;
 u8 g_SoilHumi;
 u8 g_Light;
+u8 g_humi;
+u8 g_SoilHumi;
+u8 g_Light;
+
 bool g_SPK = 0; // 蜂鸣器状态
 bool g_JD = 0;  // 继电器状态
 bool g_LED = 0; // LED状态
 
-u8 SoilHumi_threshold = 50;  // 默认阈值
-u8 Light_threshold = 50;
+u8 g_temp_HT = 45; // 温度上限
+u8 g_temp_LT = 0;  // 温度下限
+u8 g_humi_HT = 90; // 湿度上限
+u8 g_humi_LT = 20; // 湿度下限
+u8 g_SoilHumi_HT = 100; // 土壤湿度上限
+u8 g_SoilHumi_LT = 0;   // 土壤湿度下限
+u8 g_Light_HT = 100; // 光照上限
+u8 g_Light_LT = 0;  // 光照下限
 
 // KEY选择
 typedef enum {
     NORMAL_MODE = 0,
-    SET_SOIL_HUMI,
-    SET_LIGHT
+    SET_TEMP_HIGH,
+    SET_TEMP_LOW,
+    SET_HUMI_HIGH,
+    SET_HUMI_LOW,
+    SET_SOIL_HUMI_HIGH,
+    SET_SOIL_HUMI_LOW,
+    SET_LIGHT_HIGH,
+    SET_LIGHT_LOW,
 } SystemMode;
+
 
 SystemMode currentMode = NORMAL_MODE;
 
@@ -116,41 +133,77 @@ int main(void)
                 g_LED = !g_LED;
             } else {
                 // 自动模式下保持原有设置功能
-                if(currentMode == NORMAL_MODE) {
-                    currentMode = SET_SOIL_HUMI;
-                } else if(currentMode == SET_SOIL_HUMI) {
-                    currentMode = SET_LIGHT;
-                } else {
-                    currentMode = NORMAL_MODE;
-                }
+                currentMode = (SystemMode)((currentMode + 1) % 9);  // 循环切换9种状态
                 blink_flag = 0;
             }
             break;
             
         case KEY_INCREASE_PRESSED:
             if(workMode == MANUAL_MODE) {
-                // 手动模式下按键2控制继电器
                 g_JD = !g_JD;
             } else {
-                // 自动模式下保持原有增加功能
-                if(currentMode == SET_SOIL_HUMI && SoilHumi_threshold < 100) {
-                    SoilHumi_threshold++;
-                } else if(currentMode == SET_LIGHT && Light_threshold < 100) {
-                    Light_threshold++;
+                switch(currentMode) {
+                    case SET_TEMP_HIGH:
+                        if(g_temp_HT < 100) g_temp_HT++;
+                        break;
+                    case SET_TEMP_LOW:
+                        if(g_temp_LT < g_temp_HT) g_temp_LT++;
+                        break;
+                    case SET_HUMI_HIGH:
+                        if(g_humi_HT < 100) g_humi_HT++;
+                        break;
+                    case SET_HUMI_LOW:
+                        if(g_humi_LT < g_humi_HT) g_humi_LT++;
+                        break;
+                    case SET_SOIL_HUMI_HIGH:
+                        if(g_SoilHumi_HT < 100) g_SoilHumi_HT++;
+                        break;
+                    case SET_SOIL_HUMI_LOW:
+                        if(g_SoilHumi_LT < g_SoilHumi_HT) g_SoilHumi_LT++;
+                        break;
+                    case SET_LIGHT_HIGH:
+                        if(g_Light_HT < 100) g_Light_HT++;
+                        break;
+                    case SET_LIGHT_LOW:
+                        if(g_Light_LT < g_Light_HT) g_Light_LT++;
+                        break;
+                    default:
+                        break;
                 }
             }
             break;
-            
+        
         case KEY_DECREASE_PRESSED:
             if(workMode == MANUAL_MODE) {
-                // 手动模式下按键3控制蜂鸣器
                 g_SPK = !g_SPK;
             } else {
-                // 自动模式下保持原有减少功能
-                if(currentMode == SET_SOIL_HUMI && SoilHumi_threshold > 0) {
-                    SoilHumi_threshold--;
-                } else if(currentMode == SET_LIGHT && Light_threshold > 0) {
-                    Light_threshold--;
+                switch(currentMode) {
+                    case SET_TEMP_HIGH:
+                        if(g_temp_HT > g_temp_LT) g_temp_HT--;
+                        break;
+                    case SET_TEMP_LOW:
+                        if(g_temp_LT > 0) g_temp_LT--;
+                        break;
+                    case SET_HUMI_HIGH:
+                        if(g_humi_HT > g_humi_LT) g_humi_HT--;
+                        break;
+                    case SET_HUMI_LOW:
+                        if(g_humi_LT > 0) g_humi_LT--;
+                        break;
+                    case SET_SOIL_HUMI_HIGH:
+                        if(g_SoilHumi_HT > g_SoilHumi_LT) g_SoilHumi_HT--;
+                        break;
+                    case SET_SOIL_HUMI_LOW:
+                        if(g_SoilHumi_LT > 0) g_SoilHumi_LT--;
+                        break;
+                    case SET_LIGHT_HIGH:
+                        if(g_Light_HT > g_Light_LT) g_Light_HT--;
+                        break;
+                    case SET_LIGHT_LOW:
+                        if(g_Light_LT > 0) g_Light_LT--;
+                        break;
+                    default:
+                        break;
                 }
             }
             break;
@@ -159,48 +212,75 @@ int main(void)
             break;
 		}
 
-		// 显示逻辑（带闪烁效果）
-		if(currentMode == NORMAL_MODE) {
-			// 正常显示模式
-			sprintf(showchar, "T:%2dC S:%2d/%-2d%%", 
-					g_temp, g_SoilHumi, SoilHumi_threshold);        
-			LCD_PrintString(1, 1, showchar);
-
-			sprintf(showchar, "H:%2d%% L:%2d/%-2dLux", 
-					g_humi, g_Light, Light_threshold);        
-			LCD_PrintString(2, 1, showchar);
-		} else {
-			// 设置模式（带闪烁）
-				if(currentMode == SET_SOIL_HUMI) {
-					sprintf(showchar, "Set SoilHumi:%2d%%", SoilHumi_threshold);
-					LCD_PrintString(2, 1, showchar);
-					LCD_PrintString(1, 1, "                ");  // 清空第二行
-				} else {
-					sprintf(showchar, "Set Light: %2dLux", Light_threshold);
-					LCD_PrintString(2, 1, showchar);
-					LCD_PrintString(1, 1, "                ");  // 清空第一行
-				}
-		}
+        if(currentMode == NORMAL_MODE)
+        {
+            sprintf(showchar, "T:%2dC S:%2d/%-2d%%",g_temp, g_SoilHumi, g_SoilHumi_HT);        
+            LCD_PrintString(1, 1, showchar);
+            sprintf(showchar, "H:%2d%% L:%2d/%-2dLux",g_humi, g_Light, g_Light_HT);        
+            LCD_PrintString(2, 1, showchar);
+        }
+        else{
+            // 显示逻辑（带闪烁效果）
+            switch(currentMode) {
+                case SET_TEMP_HIGH:
+                    sprintf(showchar, "Set Temp_H:%2dC ", g_temp_HT);
+                    break;
+                case SET_TEMP_LOW:
+                    sprintf(showchar, "Set Temp_L:%2dC ", g_temp_LT);
+                    break;
+                case SET_HUMI_HIGH:
+                    sprintf(showchar, "Set Humi_H:%2d%%", g_humi_HT);
+                    break;
+                case SET_HUMI_LOW:
+                    sprintf(showchar, "Set Humi_L:%2d%%", g_humi_LT);
+                    break;
+                case SET_SOIL_HUMI_HIGH:
+                    sprintf(showchar, "SoilHumi_H:%2d%%", g_SoilHumi_HT);
+                    break;
+                case SET_SOIL_HUMI_LOW:
+                    sprintf(showchar, "SoilHumi_L:%2d%% ", g_SoilHumi_LT);
+                    break;
+                case SET_LIGHT_HIGH:
+                    sprintf(showchar, "Light_H:%2dLux ", g_Light_HT);
+                    break;
+                case SET_LIGHT_LOW:
+                    sprintf(showchar, "Light_L:%2dLux  ", g_Light_LT);
+                    break;
+                default:
+                    break;
+            }
+            LCD_PrintString(1, 1, showchar);
+            LCD_PrintString(2, 1, "   [Setting]    ");
+        }
 
 	   // 控制逻辑
 		if(workMode == AUTO_MODE) {
 			// 自动模式 - 原有逻辑
-			if(g_SoilHumi < SoilHumi_threshold) {
-				g_JD = 1;
-			} else {
-				g_JD = 0;
-			}
-			
-			if(g_Light < Light_threshold) {
-				g_LED = 0;
-			} else {
-				g_LED = 1;
-			}
-			LCD_PrintString(1,16,"A");
+            if(g_temp > g_temp_HT || g_temp < g_temp_LT || 
+                g_humi > g_humi_HT || g_humi < g_humi_LT) {
+                 g_SPK = 1;  // 温湿度异常报警
+             } else {
+                 g_SPK = 0;
+             }
+             
+             if(g_SoilHumi < g_SoilHumi_LT) {
+                 g_JD = 1;
+             } else if(g_SoilHumi > g_SoilHumi_HT) {
+                 g_JD = 0;
+             }
+             
+             if(g_Light < g_Light_LT) {
+                 g_LED = 0;
+             } else if(g_Light > g_Light_HT) {
+                 g_LED = 1;
+             }
+            //if(currentMode ==  NORMAL_MODE)
+			    LCD_PrintString(1,16,"A");
 		}
 		else
 		{
-			LCD_PrintString(1,16,"M");
+            //if(currentMode ==  NORMAL_MODE)
+			    LCD_PrintString(1,16,"M");
 		}
 			
         // 机智云协议处理
